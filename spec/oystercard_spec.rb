@@ -44,10 +44,19 @@ describe Oystercard do
 
   context "using the card" do 
 
+    before do
+      subject.top_up(Oystercard::DEFAULT_LIMIT)
+    end
+
     describe "#touch_in" do 
       it "should be in journey after touching in" do
         subject.touch_in
         expect( subject.in_journey?).to eq(true)
+      end
+
+      it "should raise and error when the balance is less than the minimum fare" do
+        subject.deduct(Oystercard::DEFAULT_LIMIT)
+        expect { subject.touch_in }.to raise_error("Insufficient funds")
       end
     end
 
