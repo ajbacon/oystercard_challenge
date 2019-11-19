@@ -11,4 +11,9 @@ class Oystercard
     fail "Exceed maximum balance #{DEFAULT_LIMIT}" if @balance >= DEFAULT_LIMIT
     @balance += amount
   end
+
+  def deduct(amount)
+    fail "Insufficient funds" if @balance - amount < 0
+    @balance -= amount
+  end
 end
