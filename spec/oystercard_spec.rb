@@ -7,6 +7,13 @@ describe Oystercard do
     end
   end
 
+  describe "#journeys" do
+    it "should initialize an empty list" do
+      expect(subject.journeys).to be_empty
+    end
+
+  end
+
   describe '#top_up' do
     
   context "top up within max capacity" do
@@ -21,7 +28,7 @@ describe Oystercard do
 
   context "top up over the max capacity" do
     it 'should raise an error when we pass the max capacity' do
-      subject.top_up(90)
+      subject.top_up(Oystercard::DEFAULT_LIMIT)
       expect{ subject.top_up(10) }.to raise_error("Exceed maximum balance #{Oystercard::DEFAULT_LIMIT}" )
     end
   end
@@ -48,6 +55,7 @@ describe Oystercard do
     end
 
     let(:station) { double(:station) }
+    let(:station1) { double(:station1) }
     
     describe "#touch_in" do 
       it "should be in journey after touching in" do
@@ -56,7 +64,7 @@ describe Oystercard do
       end
 
       it "should raise and error when the balance is less than the minimum fare" do
-        subject.touch_out(Oystercard::DEFAULT_LIMIT)
+        (Oystercard::DEFAULT_LIMIT/Oystercard::MINIMUM_FARE).times {subject.touch_out(station1) }
         expect { subject.touch_in(station) }.to raise_error("Insufficient funds")
       end
 
@@ -69,7 +77,7 @@ describe Oystercard do
     describe "#touch_out" do 
       it "should not be in a journey after touching out" do
         subject.touch_in(station)
-        subject.touch_out(Oystercard::MINIMUM_FARE)
+        subject.touch_out(station1)
         expect( subject.in_journey? ).to eq(false)
       end
 
@@ -77,6 +85,11 @@ describe Oystercard do
         expect{ subject.touch_out(Oystercard::MINIMUM_FARE) }.to change{ subject.balance }.by(-Oystercard::MINIMUM_FARE)
       end
 
+      it "should check that a journey has been created after touching in then out" do
+        subject.touch_in(station)
+        subject.touch_out(station1)
+        expect(subject.journeys).to include({entry_station: station, exit_station: station1})
+      end
     end
 
     describe "#in_journey?" do 
