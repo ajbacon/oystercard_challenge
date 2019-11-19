@@ -8,11 +8,22 @@ describe Oystercard do
   end
 
   describe '#top_up' do
+    
+  context "top up within max capacity" do
+    
     it 'should increase the balance by 10' do
       expect{ subject.top_up(10) }.to change{ subject.balance }.by (10)
     end
     it 'should increase the balance by 5 twice' do
       expect{ 2.times{subject.top_up(5)} }.to change{ subject.balance }.by (10)
     end
+  end
+
+  context "top up over the max capacity" do
+    it 'should raise an error when we pass the max capacity' do
+      subject.top_up(90)
+      expect{ subject.top_up(10) }.to raise_error("Exceed maximum balance #{subject:DEFAULT_LIMIT}" )
+    end
+  end
   end
 end
