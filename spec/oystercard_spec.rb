@@ -27,20 +27,19 @@ describe Oystercard do
   end
   end
 
-  describe '#deduct' do
+  # describe '#deduct' do
+  #   before do 
+  #     subject.top_up(Oystercard::DEFAULT_LIMIT)
+  #   end
 
-    before do 
-      subject.top_up(Oystercard::DEFAULT_LIMIT)
-    end
+  #   xit 'should deduct given quantitiy from balance' do
+  #     expect { subject.deduct(Oystercard::DEFAULT_LIMIT*0.9) }.to change { subject.balance }.by (-Oystercard::DEFAULT_LIMIT*0.9)
+  #   end
 
-    it 'should deduct given quantitiy from balance' do
-      expect { subject.deduct(Oystercard::DEFAULT_LIMIT*0.9) }.to change { subject.balance }.by (-Oystercard::DEFAULT_LIMIT*0.9)
-    end
-
-    it 'should raise error when the balance goes negative' do
-      expect { subject.deduct(Oystercard::DEFAULT_LIMIT*1.1) }.to raise_error("Insufficient funds")
-    end
-  end
+  #   it 'should raise error when the balance goes negative' do
+  #     expect { subject.deduct(Oystercard::DEFAULT_LIMIT*1.1) }.to raise_error("Insufficient funds")
+  #   end
+  # end
 
   context "using the card" do 
 
@@ -55,7 +54,7 @@ describe Oystercard do
       end
 
       it "should raise and error when the balance is less than the minimum fare" do
-        subject.deduct(Oystercard::DEFAULT_LIMIT)
+        subject.touch_out(Oystercard::DEFAULT_LIMIT)
         expect { subject.touch_in }.to raise_error("Insufficient funds")
       end
     end
@@ -63,9 +62,14 @@ describe Oystercard do
     describe "#touch_out" do 
       it "should not be in a journey after touching out" do
         subject.touch_in
-        subject.touch_out
+        subject.touch_out(Oystercard::MINIMUM_FARE)
         expect( subject.in_journey? ).to eq(false)
       end
+
+      it "should deduct the fare from the balance" do 
+        expect{ subject.touch_out(Oystercard::MINIMUM_FARE) }.to change{ subject.balance }.by(-Oystercard::MINIMUM_FARE)
+      end
+
     end
 
     describe "#in_journey?" do 
@@ -74,15 +78,5 @@ describe Oystercard do
         expect(subject).to be_in_journey
       end
     end
-
-
-
   end
-    
-
-
-
-
-
-
 end
