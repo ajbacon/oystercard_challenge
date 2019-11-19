@@ -28,21 +28,52 @@ describe Oystercard do
   end
 
   describe '#deduct' do
-    it 'should deduct given quantitiy from balance' do
-      subject.top_up(10)
-      expect { subject.deduct(3) }.to change { subject.balance }.by (-3)
+
+    before do 
+      subject.top_up(Oystercard::DEFAULT_LIMIT)
     end
 
-    it 'should deduct given quantity from balance' do
-      subject.top_up(10)
-      expect { subject.deduct(5) }.to change { subject.balance }.by (-5)
+    it 'should deduct given quantitiy from balance' do
+      expect { subject.deduct(Oystercard::DEFAULT_LIMIT*0.9) }.to change { subject.balance }.by (-Oystercard::DEFAULT_LIMIT*0.9)
     end
 
     it 'should raise error when the balance goes negative' do
-      subject.top_up(5)
-      expect { subject.deduct(10) }.to raise_error("Insufficient funds")
+      expect { subject.deduct(Oystercard::DEFAULT_LIMIT*1.1) }.to raise_error("Insufficient funds")
     end
   end
+
+  context "using the card" do 
+
+    describe "#touch_in" do 
+      it "should be in journey after touching in" do
+        subject.touch_in
+        expect( subject.in_journey?).to eq(true)
+      end
+    end
+
+    describe "#touch_out" do 
+      it "should not be in a journey after touching out" do
+        subject.touch_in
+        subject.touch_out
+        expect( subject.in_journey? ).to eq(false)
+      end
+    end
+
+    describe "#in_journey?" do 
+      it "should true after touching in" do
+        subject.touch_in
+        expect(subject).to be_in_journey
+      end
+    end
+
+
+
+  end
+    
+
+
+
+
 
 
 end
