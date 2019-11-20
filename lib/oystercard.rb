@@ -1,16 +1,16 @@
-class Oystercard 
+class Oystercard
   attr_reader :balance, :entry_station, :journeys
 
   DEFAULT_LIMIT = 90
   MINIMUM_FARE = 1
-  
+
   def initialize
     @balance = 0
     @in_journey = false
     @journeys = []
     @journey = {entry_station: nil, exit_station: nil}
   end
-  
+
   def top_up(amount)
     fail "Exceed maximum balance #{DEFAULT_LIMIT}" if @balance >= DEFAULT_LIMIT
     @balance += amount
@@ -30,7 +30,7 @@ class Oystercard
   end
 
   def in_journey?
-    !!@journey[:entry_station] 
+    !!@journey[:entry_station]
   end
 
   private
@@ -40,3 +40,5 @@ class Oystercard
     @balance -= amount
   end
 end
+
+def

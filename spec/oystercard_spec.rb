@@ -1,6 +1,6 @@
 require 'oystercard'
 describe Oystercard do
-  
+
   describe '#balance' do
     it 'should show 0 balance' do
       expect(subject.balance).to eq(0)
@@ -15,9 +15,9 @@ describe Oystercard do
   end
 
   describe '#top_up' do
-    
+
   context "top up within max capacity" do
-    
+
     it 'should increase the balance by 10' do
       expect{ subject.top_up(10) }.to change{ subject.balance }.by (10)
     end
@@ -35,7 +35,7 @@ describe Oystercard do
   end
 
   # describe '#deduct' do
-  #   before do 
+  #   before do
   #     subject.top_up(Oystercard::DEFAULT_LIMIT)
   #   end
 
@@ -48,7 +48,7 @@ describe Oystercard do
   #   end
   # end
 
-  context "using the card" do 
+  context "using the card" do
 
     before do
       subject.top_up(Oystercard::DEFAULT_LIMIT)
@@ -56,8 +56,9 @@ describe Oystercard do
 
     let(:station) { double(:station) }
     let(:station1) { double(:station1) }
-    
-    describe "#touch_in" do 
+    let(:journey) { double(:journey) }
+
+    describe "#touch_in" do
       it "should be in journey after touching in" do
         subject.touch_in(station)
         expect( subject.in_journey?).to eq(true)
@@ -74,14 +75,14 @@ describe Oystercard do
       end
     end
 
-    describe "#touch_out" do 
+    describe "#touch_out" do
       it "should not be in a journey after touching out" do
         subject.touch_in(station)
         subject.touch_out(station1)
         expect( subject.in_journey? ).to eq(false)
       end
 
-      it "should deduct the fare from the balance" do 
+      it "should deduct the fare from the balance" do
         expect{ subject.touch_out(Oystercard::MINIMUM_FARE) }.to change{ subject.balance }.by(-Oystercard::MINIMUM_FARE)
       end
 
@@ -92,7 +93,7 @@ describe Oystercard do
       end
     end
 
-    describe "#in_journey?" do 
+    describe "#in_journey?" do
       it "should true after touching in" do
         subject.touch_in(station)
         expect(subject).to be_in_journey
