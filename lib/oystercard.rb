@@ -1,3 +1,5 @@
+require_relative "journey"
+
 class Oystercard
   attr_reader :balance, :entry_station, :journeys
 
@@ -40,5 +42,3 @@ class Oystercard
     @balance -= amount
   end
 end
-
-def

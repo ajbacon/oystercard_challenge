@@ -56,7 +56,7 @@ describe Oystercard do
 
     let(:station) { double(:station) }
     let(:station1) { double(:station1) }
-    let(:journey) { double(:journey) }
+    # let(:journey) { double(:journey) }
 
     describe "#touch_in" do
       it "should be in journey after touching in" do
@@ -69,10 +69,10 @@ describe Oystercard do
         expect { subject.touch_in(station) }.to raise_error("Insufficient funds")
       end
 
-      it 'should store the entry location' do
-        subject.touch_in(station)
-        expect(subject.entry_station).to eq(station)
-      end
+      # it 'should store the entry location' do
+      #   subject.touch_in(station)
+      #   expect(subject.entry_station).to eq(station)
+      # end
     end
 
     describe "#touch_out" do
