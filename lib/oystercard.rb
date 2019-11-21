@@ -2,16 +2,17 @@ require_relative "journey"
 require_relative "station"
 
 class Oystercard
-  attr_reader :balance, :journeys
+  attr_reader :balance, :journeys, :in_journey
 
   DEFAULT_LIMIT = 90
   MINIMUM_FARE = 1
 
-  def initialize
+  def initialize(journey_class = Journey)
     @balance = 0
     @in_journey = false
     @journeys = []
     @journey = nil
+    @journey_class = journey_class
   end
 
   def top_up(amount)
@@ -27,13 +28,13 @@ class Oystercard
     end
 
     @in_journey = true
-    @journey = Journey.new(station)
+    @journey = @journey_class.new(station)
 
   end
 
   def touch_out(station)
     if @in_journey == false
-      @journey = Journey.new
+      @journey = @journey_class.new
       @journey.end_journey(station)
       deduct(@journey.fare)
     else

@@ -48,6 +48,12 @@ describe Oystercard do
   #   end
   # end
 
+  it "should raise and error when the balance is less than the minimum fare" do
+    expect { subject.touch_in(station) }.to raise_error("Insufficient funds")
+  end
+
+
+
   context "using the card" do
 
     before do
@@ -56,18 +62,15 @@ describe Oystercard do
 
     let(:station) { double(:station) }
     let(:station1) { double(:station1) }
-    # let(:journey) { double(:journey) }
+    let(:journey) { double(:journey) }
 
     describe "#touch_in" do
       it "should be in journey after touching in" do
         subject.touch_in(station)
-        expect( subject.in_journey?).to eq(true)
+        expect( subject.in_journey).to eq(true)
       end
 
-      it "should raise and error when the balance is less than the minimum fare" do
-        (Oystercard::DEFAULT_LIMIT/Oystercard::MINIMUM_FARE).times {subject.touch_out(station1) }
-        expect { subject.touch_in(station) }.to raise_error("Insufficient funds")
-      end
+
 
       # it 'should store the entry location' do
       #   subject.touch_in(station)
@@ -79,7 +82,7 @@ describe Oystercard do
       it "should not be in a journey after touching out" do
         subject.touch_in(station)
         subject.touch_out(station1)
-        expect( subject.in_journey? ).to eq(false)
+        expect( subject.in_journey ).to eq(false)
       end
 
       it "should deduct the fare from the balance" do
