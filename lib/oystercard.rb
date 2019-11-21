@@ -21,23 +21,28 @@ class Oystercard
 
   def touch_in(station)
     fail "Insufficient funds" if @balance < MINIMUM_FARE
+    if @in_journey == true
+      @journey.end_journey
+      deduct(@journey.fare)
+    end
 
-    
+    @in_journey = true
     @journey = Journey.new(station)
 
   end
 
   def touch_out(station)
-
-    @journey.end_journey(station)
-    deduct(@journey.fare)
+    if @in_journey == false
+      @journey = Journey.new
+      @journey.end_journey(station)
+      deduct(@journey.fare)
+    else
+     @journey.end_journey(station)
+     deduct(@journey.fare)
+    end
+    @in_journey = false
     @journeys << @journey
     @journey = nil
-
-  end
-
-  def in_journey?
-    !!@journey[:entry_station]
   end
 
   private
