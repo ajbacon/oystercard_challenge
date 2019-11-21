@@ -14,5 +14,7 @@ class Journey
     @fare = MINIMUM_FARE unless entry_station == nil || exit_station == nil
   end
 
-
+  def in_journey?
+    !!@entry_station && !@exit_station
+  end
 end
