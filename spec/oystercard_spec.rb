@@ -3,7 +3,7 @@ describe Oystercard do
 
   let(:station1) { double(:station1) }
   let(:station2) { double(:station2) }
-  let(:journey) { double(:journey, entry_station: nil, exit_station: nil, fare: nil)}
+  let(:journey) { double(:journey, entry_station: nil, exit_station: nil, fare: nil, in_journey?: false)}
   #thanks to Alastair G for the double syntax below :)
   let(:journey_class) { double :journey_class, new: journey}
   subject { Oystercard.new journey_class }
@@ -46,28 +46,90 @@ describe Oystercard do
     end
 
     context "if not on a previous journey" do
-      
       before do
         subject.top_up(Oystercard::MAX_LIMIT)
-        allow(journey).to receive(:in_journey) {false}
+        allow(journey).to receive(:in_journey?) {false}
         allow(journey).to receive(:entry_station) {station1}
+
       end
 
       it "should log a new journey instance" do
-        p journey
+        subject.touch_in(station1)
+        p journey.in_journey?
+        expect(subject.journeys).to include(journey)
+      end
+
+      it "should not deduct any money" do
+        expect { subject.touch_in(station1) }.to change {subject.balance}.by (0)
+      end
+    end
+
+    context "if on a previous journey" do
+      before do
+        subject.top_up(Oystercard::MAX_LIMIT)
+        allow(journey).to receive(:in_journey?) {true}
+        allow(journey).to receive(:entry_station) {station1}
+        allow(journey).to receive(:fare) {6}
+      end
+
+      it "should log a new journey instance" do
         subject.touch_in(station1)
         expect(subject.journeys).to include(journey)
       end
 
+      it "should deduct the penalty fare" do
+        subject.touch_in(station1)
+        expect { subject.touch_in(station1) }.to change {subject.balance}.by (-6)
+      end
     end
   end
+
+  describe "#touch out" do 
+
+    context "if a journey is in progress" do 
+
+      before do
+        subject.top_up(Oystercard::MAX_LIMIT)
+        allow(journey).to receive(:in_journey?) {true}
+        allow(journey).to receive(:entry_station) {station1}
+        allow(journey).to receive(:end_journey) {journey}
+        allow(journey).to receive(:fare) {1}
+      end
+
+      it "will deduct a standard fare" do
+        expect { subject.touch_out(station2) }.to change {subject.balance}.by (-1)
+      end
+    end
+    
+
+    context "if a journey is not in progress" do 
+
+      before do
+        subject.top_up(Oystercard::MAX_LIMIT)
+        allow(journey).to receive(:in_journey?) {false}
+        allow(journey).to receive(:entry_station) {nil}
+        allow(journey).to receive(:end_journey) {journey}
+        allow(journey).to receive(:fare) {6}
+      end
+
+      it "will create a new journey" do 
+        subject.touch_out(station2)
+        expect(subject.journeys).to include(journey)
+      end
+
+      it "will deduct a standard fare" do
+        expect { subject.touch_out(station2) }.to change {subject.balance}.by (-6)
+      end
+    end
+  end
+
 
   
 
   context "using the card" do
 
     before do
-      subject.top_up(Oystercard::DEFAULT_LIMIT)
+      subject.top_up(Oystercard::MAX_LIMIT)
     end
 
     let(:station) { double(:station) }
