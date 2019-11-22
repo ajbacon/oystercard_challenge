@@ -13,7 +13,7 @@ describe JourneyLog do
 
     it "starts a journey" do
       expect(journey_class).to receive(:new).with(station1)
-      # subject.start(station1) 
+      subject.start(station1) 
     end
 
 
